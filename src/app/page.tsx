@@ -1,66 +1,31 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import MotifBand from "@/components/MotifBand";
+import PillarButton from "@/components/PillarButton";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="max-w-2xl mx-auto px-4">
+      <header className="py-8 text-center">
+        <h1 className="text-2xl font-bold text-saffron-700 m-0">🪔 Bhandara</h1>
+        <p className="mt-2 text-ink-600">Find or share a Badamangal near you</p>
+      </header>
+      <MotifBand />
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-8">
+        <PillarButton
+          href="/find"
+          icon="🔎"
+          label="Find a Bhandara"
+          subtext="Discover events nearby"
         />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        <PillarButton
+          href="/post"
+          icon="📍"
+          label="Post a Bhandara"
+          subtext="Share where Prasad is being served"
+        />
+      </section>
+      <p className="text-center text-ink-600 text-sm px-4">
+        A community space for charitable food distribution events. Run by sewa, kept honest by AI verification.
+      </p>
+    </main>
   );
 }
