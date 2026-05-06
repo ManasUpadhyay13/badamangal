@@ -20,6 +20,9 @@
 
 **Reference spec:** `docs/superpowers/specs/2026-05-06-badamangal-locator-design.md`
 
+> **STACK UPDATE (2026-05-07): shadcn/ui adopted.**
+> The original plan called for plain CSS Modules. The user requested shadcn/ui throughout for UI consistency. Tailwind v4 replaces the CSS Modules approach; shadcn primitives replace hand-rolled UI components where applicable. **Read `docs/superpowers/plans/2026-05-07-shadcn-addendum.md` before executing any task** — it lists per-task adjustments and the new component mapping. Tasks not mentioned in the addendum execute as written below.
+
 ---
 
 ## File Structure
