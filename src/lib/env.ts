@@ -5,8 +5,10 @@ const ServerSchema = z.object({
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   OPENAI_API_KEY: z.string().min(1),
-  CRON_SECRET: z.string().min(1),
-  ADMIN_EMAIL: z.email(),
+  // Optional at the schema level — required only by the routes that need them.
+  // /api/cron/expire requires CRON_SECRET; /admin and /api/admin/* require ADMIN_EMAIL.
+  CRON_SECRET: z.string().min(1).optional(),
+  ADMIN_EMAIL: z.email().optional(),
 });
 
 export type ServerEnv = z.infer<typeof ServerSchema>;

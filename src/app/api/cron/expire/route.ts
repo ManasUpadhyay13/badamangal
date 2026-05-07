@@ -14,9 +14,12 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 export async function POST(req: Request) {
+  const secret = serverEnv().CRON_SECRET;
+  if (!secret) {
+    return NextResponse.json({ error: "cron_not_configured" }, { status: 500 });
+  }
   const auth = req.headers.get("authorization");
-  const expected = `Bearer ${serverEnv().CRON_SECRET}`;
-  if (auth !== expected) {
+  if (auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
