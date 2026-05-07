@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { VALIDATION_RUBRIC, RESPONSE_SCHEMA } from "../../src/lib/gemini/rubric";
+import { VALIDATION_RUBRIC, RESPONSE_SCHEMA } from "../../src/lib/vision/rubric";
 
 describe("rubric", () => {
   it("mentions key authentic markers", () => {

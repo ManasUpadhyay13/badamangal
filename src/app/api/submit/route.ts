@@ -6,7 +6,7 @@ import {
   markOutcome,
   deleteAttempt,
 } from "@/lib/rate-limit/check";
-import { validatePhoto } from "@/lib/gemini/validator";
+import { validatePhoto } from "@/lib/vision/validator";
 import { isWithinSubmissionWindow } from "@/lib/ist/time";
 
 export const runtime = "nodejs";

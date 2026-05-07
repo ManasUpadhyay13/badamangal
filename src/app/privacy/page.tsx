@@ -35,7 +35,7 @@ export default function PrivacyPage() {
 
       <h2 className="text-xl font-semibold mt-6 mb-2">Photo validation</h2>
       <p>
-        Submitted photos are sent to Google&apos;s Gemini API for authenticity checks
+        Submitted photos are sent to OpenAI&apos;s vision API for authenticity checks
         against reference imagery of bhandara events. Photos that fail validation are not
         stored. Approved photos are public on this site.
       </p>

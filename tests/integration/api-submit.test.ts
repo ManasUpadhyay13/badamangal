@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/gemini/validator", () => ({
+vi.mock("@/lib/vision/validator", () => ({
   validatePhoto: vi.fn(),
   ValidationInfraError: class extends Error {},
 }));
@@ -14,7 +14,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 import { POST } from "@/app/api/submit/route";
-import { validatePhoto } from "@/lib/gemini/validator";
+import { validatePhoto } from "@/lib/vision/validator";
 import { checkAndRecordAttempt, markOutcome, deleteAttempt } from "@/lib/rate-limit/check";
 import { supabaseAdmin } from "@/lib/supabase/server";
 

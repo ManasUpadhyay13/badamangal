@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Inter, Tiro_Devanagari_Hindi } from "next/font/google";
+import { Plus_Jakarta_Sans, Fraunces, Tiro_Devanagari_Hindi } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-inter",
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600", "700"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -27,7 +34,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${tiroDeva.variable}`}>
+    <html
+      lang="en"
+      className={`${jakarta.variable} ${fraunces.variable} ${tiroDeva.variable}`}
+    >
       <body className="flex flex-col min-h-screen">
         <div className="flex-1">{children}</div>
         <Toaster richColors position="bottom-center" />

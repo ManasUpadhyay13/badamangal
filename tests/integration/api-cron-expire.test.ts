@@ -71,7 +71,7 @@ describe("POST /api/cron/expire", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "service";
-    process.env.GEMINI_API_KEY = "g";
+    process.env.OPENAI_API_KEY = "g";
     process.env.ADMIN_EMAIL = "a@b.com";
   });
 

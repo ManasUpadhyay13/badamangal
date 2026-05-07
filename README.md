@@ -1,12 +1,12 @@
 # 🪔 Bhandara — Badamangal Locator
 
-A community web app for discovering and submitting badamangal (charitable food distribution) events across India. Anonymous, mobile-first, India-wide, IST-throughout. Photos validated by Gemini Vision before being made public.
+A community web app for discovering and submitting badamangal (charitable food distribution) events across India. Anonymous, mobile-first, India-wide, IST-throughout. Photos validated by OpenAI vision before being made public.
 
 ## Stack
 
 - **Next.js 16** (App Router, TypeScript, Tailwind v4 + shadcn/ui)
 - **Supabase** (Postgres + PostGIS for geospatial, Storage for photos, Auth for admin)
-- **Gemini 2.5 Flash** for photo authenticity validation
+- **OpenAI GPT-4o-mini (Vision)** for photo authenticity validation
 - **Leaflet + OpenStreetMap** for in-app maps; Google Maps deep-link for navigation
 - **Vitest** for tests; **Vercel Cron** for daily expiry
 
@@ -26,7 +26,7 @@ npm run dev                  # http://localhost:3000
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...   # server-only
-GEMINI_API_KEY=...              # server-only
+OPENAI_API_KEY=sk-...           # server-only
 CRON_SECRET=any-32-char-string  # server-only; Vercel injects on cron calls
 ADMIN_EMAIL=you@example.com     # the single allowlisted admin email
 ```
@@ -61,7 +61,7 @@ Place three real bhandara photos as `ref-1.jpg`, `ref-2.jpg`, `ref-3.jpg` inside
 npm run upload:refs
 ```
 
-These three photos are sent to Gemini alongside every submission as visual exemplars of "authentic". You can swap them later by replacing the files and re-running the upload (and redeploying, since the cache is process-lifetime).
+These three photos are sent to OpenAI alongside every submission as visual exemplars of "authentic". You can swap them later by replacing the files and re-running the upload (and redeploying, since the cache is process-lifetime).
 
 ### 3. Deploy on Vercel
 
@@ -86,7 +86,7 @@ On the production URL (or a Preview):
 src/
 ├── app/
 │   ├── api/
-│   │   ├── submit/         # POST: rate-limit + Gemini validation + insert
+│   │   ├── submit/         # POST: rate-limit + OpenAI validation + insert
 │   │   ├── nearby/         # GET: PostGIS-radius query
 │   │   ├── report/         # POST: 1 report per device per listing
 │   │   ├── cron/expire/    # daily IST-midnight sweep
@@ -103,7 +103,7 @@ src/
     ├── photo/              # HEIC convert + downscale
     ├── fingerprint/        # client visitorId hook
     ├── rate-limit/         # sliding-window check + ledger
-    ├── gemini/             # client, rubric, validator, reference cache
+    ├── vision/             # OpenAI client, rubric, validator, reference cache
     ├── admin/              # requireAdmin gate
     └── supabase/           # server (service-role) + browser (anon) clients
 supabase/migrations/        # extensions, tables, RLS, storage, nearby fn, expiring fn

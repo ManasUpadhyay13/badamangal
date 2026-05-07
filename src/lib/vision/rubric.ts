@@ -12,4 +12,5 @@ export const RESPONSE_SCHEMA = {
     confidence: { type: "string", enum: ["low", "medium", "high"] },
     reason: { type: "string" },
   },
+  additionalProperties: false,
 } as const;
