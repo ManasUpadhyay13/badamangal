@@ -6,6 +6,6 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLanding() {
   const auth = await requireAdmin();
-  if (auth.ok) redirect("/admin/reports");
+  if (auth.ok) redirect("/admin/listings");
   return <LoginForm />;
 }
