@@ -1,55 +1,65 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabaseBrowser } from "@/lib/supabase/browser";
 
-export default function LoginForm({ signedInOther }: { signedInOther: boolean }) {
+export default function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function send() {
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
     setError(null);
-    const supabase = supabaseBrowser();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/admin` },
-    });
-    if (error) setError(error.message);
-    else setSent(true);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.status === 200) {
+        router.push("/admin/reports");
+        router.refresh();
+        return;
+      }
+      if (res.status === 401) {
+        setError("That email isn't an admin.");
+      } else if (res.status === 503) {
+        setError("Admin access isn't configured on the server (set ADMIN_EMAIL).");
+      } else {
+        setError(`Unexpected error (${res.status})`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Network error");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-12 text-center">
+    <form className="max-w-sm mx-auto mt-12 text-center" onSubmit={onSubmit}>
       <h1 className="text-2xl font-bold text-saffron-700">Admin sign-in</h1>
-      {signedInOther && (
-        <p className="text-destructive mt-2">
-          You&apos;re signed in but this email is not an admin. Sign out and try again.
-        </p>
-      )}
-      {sent ? (
-        <p className="mt-4">Check your inbox for the sign-in link.</p>
-      ) : (
-        <div className="flex flex-col gap-3 mt-4">
-          <Label htmlFor="admin-email" className="text-left">
-            Email
-          </Label>
-          <Input
-            id="admin-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@example.com"
-          />
-          <Button type="button" onClick={send} disabled={!email}>
-            Send magic link
-          </Button>
-          {error && <p className="text-destructive text-sm">{error}</p>}
-        </div>
-      )}
-    </div>
+      <div className="flex flex-col gap-3 mt-4 text-left">
+        <Label htmlFor="admin-email">Email</Label>
+        <Input
+          id="admin-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="admin@example.com"
+          autoComplete="email"
+          required
+        />
+        <Button type="submit" disabled={busy || !email}>
+          {busy ? "Checking…" : "Sign in"}
+        </Button>
+        {error && <p className="text-destructive text-sm">{error}</p>}
+      </div>
+    </form>
   );
 }

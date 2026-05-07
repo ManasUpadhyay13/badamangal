@@ -51,7 +51,7 @@ npm run upload:refs  # upload public/reference-placeholders/* to Supabase
 2. In the SQL editor, run each migration file in `supabase/migrations/` in order.
 3. Verify in **Table editor**: `badamangals`, `reports`, `rate_limit_attempts` exist.
 4. Verify in **Storage**: `badamangal-photos` bucket is **public** and `reference-images` is **private**.
-5. In **Auth → URL Configuration**, add `https://<your-domain>/admin` (and `http://localhost:3000/admin` for dev) to Redirect URLs.
+5. (Auth URL Configuration is no longer needed — admin sign-in matches the email entered against `ADMIN_EMAIL` and sets an HttpOnly cookie. Supabase Auth is not used.)
 
 ### 2. Provide reference images
 
@@ -78,7 +78,7 @@ On the production URL (or a Preview):
 - `/find` — geolocation prompt → list view → switch to Map
 - `/post` — fill form, upload a real bhandara photo, submit — should land back on `/find` with success toast
 - Click `Report` on any card → fill reason → submit → 201
-- `/admin` — sign in with `ADMIN_EMAIL` (magic link); land on `/admin/reports`; verify the reported listing appears; `Hide` it; verify it disappears from `/find`
+- `/admin` — type `ADMIN_EMAIL` and sign in (no password; the email itself is the secret); land on `/admin/reports`; verify the reported listing appears; `Hide` it; verify it disappears from `/find`
 
 ## Project structure
 
