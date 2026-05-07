@@ -72,17 +72,21 @@ export default function BadamangalCard({
         </p>
         <div className="flex gap-2 mt-3 items-center flex-wrap">
           <Button
-            asChild
             size="sm"
-            onClick={(e) => {
-              if (primaryHref === "#") e.preventDefault();
-            }}
+            render={
+              <a
+                href={primaryHref}
+                onClick={(e) => {
+                  if (primaryHref === "#") e.preventDefault();
+                }}
+              />
+            }
           >
-            <a href={primaryHref}>Get directions ↗</a>
+            Get directions ↗
           </Button>
           {primaryHref !== fallbackHref && (
-            <Button asChild size="sm" variant="outline">
-              <a href={fallbackHref}>Open in browser</a>
+            <Button size="sm" variant="outline" render={<a href={fallbackHref} />}>
+              Open in browser
             </Button>
           )}
           <Button

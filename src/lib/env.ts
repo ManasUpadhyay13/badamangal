@@ -9,13 +9,11 @@ const ServerSchema = z.object({
   ADMIN_EMAIL: z.email(),
 });
 
-const ClientSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-});
-
 export type ServerEnv = z.infer<typeof ServerSchema>;
-export type ClientEnv = z.infer<typeof ClientSchema>;
+export type ClientEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: string;
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+};
 
 let cachedServer: ServerEnv | null = null;
 export function serverEnv(): ServerEnv {
@@ -31,7 +29,12 @@ export function serverEnv(): ServerEnv {
   return cachedServer;
 }
 
-export const clientEnv: ClientEnv = ClientSchema.parse({
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-});
+// `NEXT_PUBLIC_*` are inlined at build time. If not set during build (e.g.,
+// running `next build` without env), we fall back to placeholders so the
+// build succeeds — runtime calls will fail if the values are still missing.
+export const clientEnv: ClientEnv = {
+  NEXT_PUBLIC_SUPABASE_URL:
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder",
+};

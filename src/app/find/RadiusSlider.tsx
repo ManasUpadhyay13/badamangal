@@ -33,7 +33,7 @@ export default function RadiusSlider({
         max={5000}
         step={50}
         onValueChange={(vals) => {
-          const next = vals[0] ?? 50;
+          const next = Array.isArray(vals) ? (vals[0] ?? 50) : vals;
           setLocal(next);
           if (timer.current) window.clearTimeout(timer.current);
           timer.current = window.setTimeout(() => onCommit(next), 300);

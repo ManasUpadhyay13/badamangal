@@ -42,7 +42,6 @@ export async function validatePhoto(input: {
       config: {
         responseMimeType: "application/json",
         responseSchema: RESPONSE_SCHEMA as unknown as Record<string, unknown>,
-        // @ts-expect-error abortSignal supported at SDK level
         abortSignal: controller.signal,
       },
     });
