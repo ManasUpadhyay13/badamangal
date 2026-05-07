@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans, Fraunces, Tiro_Devanagari_Hindi } from "next/font/go
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Footer";
 import "./globals.css";
+import { Analytics } from '@vercel/analytics/next';
+
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin", "latin-ext"],
@@ -40,6 +42,7 @@ export default function RootLayout({
     >
       <body className="flex flex-col min-h-screen">
         <div className="flex-1">{children}</div>
+        <Analytics />
         <Toaster richColors position="bottom-center" />
         <Footer />
       </body>
