@@ -34,13 +34,12 @@ export default function PostForm() {
       start &&
       end &&
       end > start &&
-      photo &&
       fp
   );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid || !coord || !photo || !fp) return;
+    if (!valid || !coord || !fp) return;
     setSubmitting(true);
     setSubmitError(null);
     setResult(null);
@@ -52,7 +51,7 @@ export default function PostForm() {
     fd.set("event_date", date);
     fd.set("start_time", start);
     fd.set("end_time", end);
-    fd.set("photo", photo, "photo.jpg");
+    if (photo) fd.set("photo", photo, "photo.jpg");
 
     try {
       const res = await fetch("/api/submit", {
@@ -157,7 +156,7 @@ export default function PostForm() {
 
       {!valid && !submitting && (
         <p className="text-sm text-muted-foreground">
-          Fill all fields above (location, name, date, both times, and a photo) to submit.
+          Fill all required fields above (location, name, date, both times) to submit. Photo is optional but adds trust.
         </p>
       )}
 

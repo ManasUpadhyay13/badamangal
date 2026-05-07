@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 type Row = {
   id: string;
   name: string;
-  photo_path: string;
+  photo_path: string | null;
   event_date: string;
   hidden_at: string | null;
   reports: { id: string; reason: string | null; created_at: string }[];
@@ -37,11 +37,13 @@ export async function GET() {
   const rows = (data ?? []) as unknown as Row[];
 
   const items = rows.map((row) => {
-    const { data: pub } = admin.storage.from("badamangal-photos").getPublicUrl(row.photo_path);
+    const photoUrl = row.photo_path
+      ? admin.storage.from("badamangal-photos").getPublicUrl(row.photo_path).data.publicUrl
+      : null;
     return {
       id: row.id,
       name: row.name,
-      photo_url: pub.publicUrl,
+      photo_url: photoUrl,
       event_date: row.event_date,
       hidden_at: row.hidden_at,
       report_count: row.reports.length,

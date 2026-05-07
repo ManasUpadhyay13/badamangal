@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 type Item = {
   id: string;
   name: string;
-  photo_url: string;
+  photo_url: string | null;
   event_date: string;
   hidden_at: string | null;
   report_count: number;
@@ -56,12 +56,21 @@ export default function ReportsClient() {
       {items.map((it) => (
         <Card key={it.id}>
           <CardContent className="flex gap-4 items-start p-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={it.photo_url}
-              alt={it.name}
-              className="w-20 h-15 object-cover rounded-md"
-            />
+            {it.photo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={it.photo_url}
+                alt={it.name}
+                className="w-20 h-15 object-cover rounded-md"
+              />
+            ) : (
+              <div
+                className="w-20 h-15 bg-saffron-100 rounded-md flex items-center justify-center text-2xl"
+                aria-hidden
+              >
+                🪔
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold">{it.name}</span>

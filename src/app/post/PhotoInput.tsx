@@ -38,7 +38,10 @@ export default function PhotoInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="photo-input">Photo of the bhandara setup</Label>
+      <Label htmlFor="photo-input">
+        Photo of the bhandara setup{" "}
+        <span className="text-muted-foreground font-normal">(optional)</span>
+      </Label>
       <Input
         id="photo-input"
         type="file"

@@ -92,24 +92,21 @@ export async function POST(req: Request) {
     );
   }
 
+  // Photo is optional. If provided, we run OpenAI validation; otherwise we skip
+  // straight to insertion (rate-limit and report flows still apply).
   const photoEntry = form.get("photo");
-  // Cross-realm-safe check: in test env Blob globals can differ between jsdom and undici.
   const isFileLike =
     photoEntry !== null &&
     typeof photoEntry === "object" &&
     "size" in photoEntry &&
     "arrayBuffer" in photoEntry &&
     typeof (photoEntry as { arrayBuffer: unknown }).arrayBuffer === "function";
-  if (!isFileLike) {
-    return NextResponse.json({ errors: { photo: "Photo is required" } }, { status: 400 });
-  }
-  const photo = photoEntry as Blob;
-  if (photo.size === 0) {
-    return NextResponse.json({ errors: { photo: "Photo is required" } }, { status: 400 });
-  }
-  if (photo.size > 10 * 1024 * 1024) {
+  const photo: Blob | null = isFileLike ? (photoEntry as Blob) : null;
+  if (photo && photo.size > 10 * 1024 * 1024) {
     return NextResponse.json({ errors: { photo: "Photo too large" } }, { status: 400 });
   }
+  // Treat empty photo blob as no photo.
+  const hasPhoto = photo !== null && photo.size > 0;
 
   const ip = clientIp(req);
   const admin = supabaseAdmin();
@@ -122,35 +119,39 @@ export async function POST(req: Request) {
     );
   }
 
-  const ext = pickExt(photo.type);
-  const key = `${crypto.randomUUID()}.${ext}`;
+  let photoKey: string | null = null;
 
-  const upload = await admin.storage.from("badamangal-photos").upload(key, photo, {
-    contentType: photo.type || "image/jpeg",
-    upsert: false,
-  });
-  if (upload.error) {
-    await deleteAttempt(admin, limit.attemptId);
-    return NextResponse.json({ error: "upload_failed" }, { status: 502 });
-  }
+  if (hasPhoto && photo) {
+    const ext = pickExt(photo.type);
+    photoKey = `${crypto.randomUUID()}.${ext}`;
 
-  let outcome;
-  try {
-    const buffer = Buffer.from(await photo.arrayBuffer());
-    outcome = await validatePhoto({
-      data: buffer.toString("base64"),
-      mimeType: photo.type || "image/jpeg",
+    const upload = await admin.storage.from("badamangal-photos").upload(photoKey, photo, {
+      contentType: photo.type || "image/jpeg",
+      upsert: false,
     });
-  } catch {
-    await admin.storage.from("badamangal-photos").remove([key]);
-    await deleteAttempt(admin, limit.attemptId);
-    return NextResponse.json({ error: "validation_unavailable" }, { status: 502 });
-  }
+    if (upload.error) {
+      await deleteAttempt(admin, limit.attemptId);
+      return NextResponse.json({ error: "upload_failed" }, { status: 502 });
+    }
 
-  if (!outcome.is_authentic) {
-    await admin.storage.from("badamangal-photos").remove([key]);
-    await markOutcome(admin, limit.attemptId, "rejected_validation");
-    return NextResponse.json({ reason: outcome.reason }, { status: 422 });
+    let outcome;
+    try {
+      const buffer = Buffer.from(await photo.arrayBuffer());
+      outcome = await validatePhoto({
+        data: buffer.toString("base64"),
+        mimeType: photo.type || "image/jpeg",
+      });
+    } catch {
+      await admin.storage.from("badamangal-photos").remove([photoKey]);
+      await deleteAttempt(admin, limit.attemptId);
+      return NextResponse.json({ error: "validation_unavailable" }, { status: 502 });
+    }
+
+    if (!outcome.is_authentic) {
+      await admin.storage.from("badamangal-photos").remove([photoKey]);
+      await markOutcome(admin, limit.attemptId, "rejected_validation");
+      return NextResponse.json({ reason: outcome.reason }, { status: 422 });
+    }
   }
 
   const insert = await admin
@@ -161,7 +162,7 @@ export async function POST(req: Request) {
       start_time: start,
       end_time: end,
       event_date: parsed.data.event_date,
-      photo_path: key,
+      photo_path: photoKey,
       device_fingerprint: fingerprint,
       ip_address: ip,
     })
@@ -169,7 +170,7 @@ export async function POST(req: Request) {
     .single();
 
   if (insert.error || !insert.data) {
-    await admin.storage.from("badamangal-photos").remove([key]);
+    if (photoKey) await admin.storage.from("badamangal-photos").remove([photoKey]);
     await markOutcome(admin, limit.attemptId, "rejected_validation");
     return NextResponse.json({ error: "insert_failed" }, { status: 500 });
   }

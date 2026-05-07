@@ -157,6 +157,37 @@ describe("POST /api/submit", () => {
     expect(res.status).toBe(400);
   });
 
+  it("accepts a submission without a photo (skips OpenAI validation)", async () => {
+    (checkAndRecordAttempt as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      attemptId: 60,
+    });
+    const admin = fakeAdmin();
+    (supabaseAdmin as ReturnType<typeof vi.fn>).mockReturnValue(admin);
+
+    const fd = new FormData();
+    fd.set("name", "No-photo Bhandara");
+    fd.set("lat", "26.8467");
+    fd.set("lng", "80.9462");
+    fd.set("event_date", isoToday());
+    fd.set("start_time", "17:00");
+    fd.set("end_time", "20:00");
+    // no photo
+
+    const res = await POST(
+      new Request("http://localhost/api/submit", {
+        method: "POST",
+        body: fd,
+        headers: { "x-device-fingerprint": "fp-test", "x-forwarded-for": "9.9.9.9" },
+      })
+    );
+    expect(res.status).toBe(201);
+    expect(validatePhoto).not.toHaveBeenCalled();
+    expect(markOutcome).toHaveBeenCalledWith(admin, 60, "accepted");
+    // photo_path should be null on the inserted row
+    expect(admin.inserted[0]?.photo_path).toBeNull();
+  });
+
   it("returns 400 on event_date outside window", async () => {
     const tooFar = new Date(Date.now() + 30 * 86400 * 1000 + 5.5 * 3600 * 1000)
       .toISOString()

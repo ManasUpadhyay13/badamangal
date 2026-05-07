@@ -13,7 +13,7 @@ export type FindItem = {
   name: string;
   lat: number;
   lng: number;
-  photo_url: string;
+  photo_url: string | null;
   start_time: string;
   end_time: string;
   event_date: string;
@@ -51,14 +51,29 @@ export default function BadamangalCard({
 
   return (
     <Card className="overflow-hidden mb-3 p-0 gap-0">
-      <div className="relative aspect-video bg-saffron-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.photo_url}
-          alt={item.name}
-          loading="lazy"
-          className="w-full h-full object-cover block"
-        />
+      <div className="relative aspect-video bg-saffron-100 flex items-center justify-center">
+        {item.photo_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.photo_url}
+            alt={item.name}
+            loading="lazy"
+            className="w-full h-full object-cover block"
+          />
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{
+              backgroundImage:
+                "conic-gradient(from 0deg, var(--color-gold-500) 0deg 60deg, transparent 60deg 90deg, var(--color-gold-500) 90deg 150deg, transparent 150deg 180deg, var(--color-gold-500) 180deg 240deg, transparent 240deg 270deg, var(--color-gold-500) 270deg 330deg, transparent 330deg 360deg)",
+              backgroundSize: "20px 20px",
+              backgroundColor: "var(--color-saffron-50)",
+            }}
+            aria-hidden
+          >
+            <span className="text-4xl">🪔</span>
+          </div>
+        )}
         {item.is_happening_now && (
           <Badge className="absolute top-2 left-2 bg-green-700 text-white hover:bg-green-700">
             Happening now

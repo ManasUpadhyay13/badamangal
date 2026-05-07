@@ -49,7 +49,7 @@ export async function GET(req: Request) {
     name: string;
     lat: number;
     lng: number;
-    photo_path: string;
+    photo_path: string | null;
     start_time: string;
     end_time: string;
     event_date: string;
@@ -57,15 +57,15 @@ export async function GET(req: Request) {
   }>;
 
   const items = rows.map((row) => {
-    const { data: pub } = admin.storage
-      .from("badamangal-photos")
-      .getPublicUrl(row.photo_path);
+    const photoUrl = row.photo_path
+      ? admin.storage.from("badamangal-photos").getPublicUrl(row.photo_path).data.publicUrl
+      : null;
     return {
       id: row.id,
       name: row.name,
       lat: row.lat,
       lng: row.lng,
-      photo_url: pub.publicUrl,
+      photo_url: photoUrl,
       start_time: row.start_time,
       end_time: row.end_time,
       event_date: row.event_date,
