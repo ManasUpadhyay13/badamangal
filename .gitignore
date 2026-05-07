@@ -40,6 +40,10 @@ yarn-error.log*
 # brainstorming session artifacts
 .superpowers/
 
+# supabase CLI workspace
+supabase/.temp/
+supabase/.branches/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
