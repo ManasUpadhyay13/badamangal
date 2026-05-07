@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import MotifBand from "@/components/MotifBand";
 import RadiusSlider from "./RadiusSlider";
 import ListView from "./ListView";
+import ReportDialog from "./ReportDialog";
 import type { FindItem } from "./BadamangalCard";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
@@ -23,6 +24,7 @@ export default function FindClient() {
   const [items, setItems] = useState<FindItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<"list" | "map">("list");
+  const [reportingId, setReportingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!showToast) return;
@@ -32,6 +34,7 @@ export default function FindClient() {
 
   useEffect(() => {
     if (!navigator.geolocation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- no-op signal that geolocation API is unavailable
       setPermissionDenied(true);
       return;
     }
@@ -59,6 +62,7 @@ export default function FindClient() {
 
   useEffect(() => {
     if (!coord) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch updates list state
     void fetchNearby(coord.lat, coord.lng, radius);
   }, [coord, radius, fetchNearby]);
 
@@ -91,13 +95,7 @@ export default function FindClient() {
             <TabsTrigger value="map">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="list" className="mt-3">
-            <ListView
-              items={items}
-              loading={loading}
-              onReport={(id) => {
-                console.log("Report requested for", id);
-              }}
-            />
+            <ListView items={items} loading={loading} onReport={setReportingId} />
           </TabsContent>
           <TabsContent value="map" className="mt-3">
             <MapView items={items} center={coord} />
@@ -106,12 +104,13 @@ export default function FindClient() {
       )}
 
       {!coord && (
-        <ListView
-          items={items}
-          loading={false}
-          onReport={(id) => console.log("Report requested for", id)}
-        />
+        <ListView items={items} loading={false} onReport={setReportingId} />
       )}
+
+      <ReportDialog
+        badamangalId={reportingId}
+        onClose={() => setReportingId(null)}
+      />
     </main>
   );
 }

@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "bhandara.fp";
 
+function readCached(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(STORAGE_KEY);
+}
+
 export function useFingerprint(): string | null {
-  const [fp, setFp] = useState<string | null>(null);
+  const [fp, setFp] = useState<string | null>(() => readCached());
 
   useEffect(() => {
-    const cached = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
-    if (cached) {
-      setFp(cached);
-      return;
-    }
+    if (fp) return;
     let cancelled = false;
     (async () => {
       const FP = (await import("@fingerprintjs/fingerprintjs")).default;
@@ -31,7 +32,7 @@ export function useFingerprint(): string | null {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [fp]);
 
   return fp;
 }

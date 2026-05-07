@@ -20,8 +20,7 @@ function makeFakeAdmin(initialPriorCount: number) {
             }),
           };
         },
-        select(_col: string, _opts: { count?: string; head?: boolean }) {
-          // Count includes the row we just inserted (initialPriorCount + 1)
+        select() {
           const total = initialPriorCount + 1;
           const chain = {
             gt() {

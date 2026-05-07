@@ -28,8 +28,9 @@ export default function BadamangalCard({
   item: FindItem;
   onReport: (id: string) => void;
 }) {
-  const [ua, setUa] = useState("");
+  const [ua, setUa] = useState<string>("");
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot UA capture on client
     setUa(navigator.userAgent);
   }, []);
 

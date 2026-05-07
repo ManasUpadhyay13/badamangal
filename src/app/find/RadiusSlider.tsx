@@ -1,7 +1,7 @@
 "use client";
 
 import { Slider } from "@/components/ui/slider";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function RadiusSlider({
   value,
@@ -13,9 +13,14 @@ export default function RadiusSlider({
   disabled?: boolean;
 }) {
   const [local, setLocal] = useState(value);
+  const [lastValue, setLastValue] = useState(value);
   const timer = useRef<number | null>(null);
 
-  useEffect(() => setLocal(value), [value]);
+  // Sync local state when the prop changes from outside (e.g., reset).
+  if (value !== lastValue) {
+    setLastValue(value);
+    setLocal(value);
+  }
 
   const display = local < 1000 ? `${local} m` : `${(local / 1000).toFixed(1)} km`;
 
