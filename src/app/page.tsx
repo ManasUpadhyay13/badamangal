@@ -1,5 +1,8 @@
+import { Star } from "lucide-react";
 import MotifBand from "@/components/MotifBand";
 import PillarButton from "@/components/PillarButton";
+
+const REPO_URL = "https://github.com/ManasUpadhyay13/badamangal";
 
 export default function Home() {
   return (
@@ -26,6 +29,17 @@ export default function Home() {
       <p className="text-center text-ink-600 text-sm px-4">
         A community space for charitable food distribution events. Run by sewa, kept honest by AI verification.
       </p>
+      <div className="flex justify-center mt-6">
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-saffron-100 bg-saffron-50 text-ink-900 text-sm font-medium hover:bg-saffron-100 transition"
+        >
+          <Star className="size-4 text-gold-500" fill="currentColor" />
+          Star this project on GitHub
+        </a>
+      </div>
     </main>
   );
 }
