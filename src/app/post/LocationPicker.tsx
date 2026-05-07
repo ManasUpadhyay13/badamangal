@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const PinDropMap = dynamic(() => import("./PinDropMap"), { ssr: false });
 
 export type Coord = { lat: number; lng: number };
 
@@ -51,17 +54,17 @@ export default function LocationPicker({
           <Label htmlFor="locmode-geo">Use my location</Label>
         </div>
         <div className="flex items-center gap-2">
-          <RadioGroupItem id="locmode-pin" value="pin" disabled />
-          <Label htmlFor="locmode-pin" className="text-muted-foreground">
-            Pick on map (coming soon)
-          </Label>
+          <RadioGroupItem id="locmode-pin" value="pin" />
+          <Label htmlFor="locmode-pin">Pick on map</Label>
         </div>
       </RadioGroup>
 
-      {mode === "geo" && (
+      {mode === "geo" ? (
         <Button type="button" variant="outline" onClick={detect} disabled={busy}>
           {busy ? "Detecting…" : value ? "Re-detect" : "Detect now"}
         </Button>
+      ) : (
+        <PinDropMap value={value} onChange={(c) => onChange(c)} />
       )}
 
       {value && (

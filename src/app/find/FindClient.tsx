@@ -2,11 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import MotifBand from "@/components/MotifBand";
 import RadiusSlider from "./RadiusSlider";
 import ListView from "./ListView";
 import type { FindItem } from "./BadamangalCard";
+
+const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
 export default function FindClient() {
   const router = useRouter();
@@ -18,6 +22,7 @@ export default function FindClient() {
   const [radius, setRadius] = useState(500);
   const [items, setItems] = useState<FindItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [view, setView] = useState<"list" | "map">("list");
 
   useEffect(() => {
     if (!showToast) return;
@@ -70,9 +75,7 @@ export default function FindClient() {
       </header>
 
       {!coord && !permissionDenied && (
-        <p className="text-center text-muted-foreground mt-4">
-          Looking up your location…
-        </p>
+        <p className="text-center text-muted-foreground mt-4">Looking up your location…</p>
       )}
 
       {permissionDenied && !coord && (
@@ -81,14 +84,34 @@ export default function FindClient() {
         </div>
       )}
 
-      <ListView
-        items={items}
-        loading={loading && Boolean(coord)}
-        onReport={(id) => {
-          // Wired in Phase 5 (ReportDialog)
-          console.log("Report requested for", id);
-        }}
-      />
+      {coord && (
+        <Tabs value={view} onValueChange={(v) => setView(v as "list" | "map")}>
+          <TabsList className="mx-auto mt-2">
+            <TabsTrigger value="list">List</TabsTrigger>
+            <TabsTrigger value="map">Map</TabsTrigger>
+          </TabsList>
+          <TabsContent value="list" className="mt-3">
+            <ListView
+              items={items}
+              loading={loading}
+              onReport={(id) => {
+                console.log("Report requested for", id);
+              }}
+            />
+          </TabsContent>
+          <TabsContent value="map" className="mt-3">
+            <MapView items={items} center={coord} />
+          </TabsContent>
+        </Tabs>
+      )}
+
+      {!coord && (
+        <ListView
+          items={items}
+          loading={false}
+          onReport={(id) => console.log("Report requested for", id)}
+        />
+      )}
     </main>
   );
 }
